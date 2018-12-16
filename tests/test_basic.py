@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from pyfinmod.basic import convert_ir, npv, irr, pmt, flat_payments, fv, retirement_problem
+from pyfinmod.basic import convert_ir, npv, irr, pmt, flat_payments, fv, retirement_problem, get_annual_rate_cc
 
 
 def test_convert_ir():
@@ -42,3 +42,9 @@ def test_fv():
 
 def test_retirement_problem():
     assert retirement_problem(24, 50000, 25, 0.05) == [15822.327630785972]
+
+
+def test_get_annual_rate_cc():
+    df = pd.DataFrame(data={'amount': [1000, 1500],
+                            'date': [date.today(), date.today() + relativedelta(years=1, months=9)]})
+    assert get_annual_rate_cc(df) == 0.23169434749037965

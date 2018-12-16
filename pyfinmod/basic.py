@@ -1,6 +1,7 @@
 from functools import partial
 from datetime import date
 from collections import defaultdict
+from math import log
 
 from dateutil.relativedelta import relativedelta
 import pandas as pd
@@ -103,7 +104,7 @@ def fv(deposits, annual_interest_rate, period='year'):
 def get_retirement_cf_dataframe(deposit, terms_of_deposit, withdrawal, terms_of_withdrawal, period='year'):
     cash_flows = [deposit]*terms_of_deposit + [-withdrawal]*terms_of_withdrawal
     terms = terms_of_deposit + terms_of_withdrawal
-    dates = [date.today() + relativedelta(**{period + 's':i}) for i in range(terms)]
+    dates = [date.today() + relativedelta(**{period + 's': i}) for i in range(terms)]
     df = pd.DataFrame(data={'cash flow': cash_flows, 'date': dates})
     return df
 
@@ -117,3 +118,14 @@ def retirement_problem(terms_of_deposit, withdrawal, terms_of_withdrawal, annual
     f = lambda deposit: npv(retirement_dataframe_by_deposit(deposit), annual_discount_rate)
     result = fsolve(f, withdrawal)
     return list(result)
+
+
+def get_annual_rate_cc(dataframe, amount_column_name='amount', date_column_name='date'):
+    amount_first = dataframe[amount_column_name].iloc[0]
+    amount_last = dataframe[amount_column_name].iloc[-1]
+    date_first = dataframe[date_column_name].iloc[0]
+    date_last = dataframe[date_column_name].iloc[-1]
+    delta = relativedelta(date_last, date_first)
+    t = delta.years + delta.months/12 + delta.days/365
+    r = log(amount_last/amount_first)/t
+    return r
