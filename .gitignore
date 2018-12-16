@@ -166,7 +166,7 @@ ipython_config.py
 
 # pyenv
 .python-version
-.ipynb
+*.ipynb
 # celery beat schedule file
 celerybeat-schedule
 
