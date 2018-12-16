@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from pyfinmod.basic import convert_ir, npv, irr, pmt, flat_payments, fv
+from pyfinmod.basic import convert_ir, npv, irr, pmt, flat_payments, fv, retirement_problem
 
 
 def test_convert_ir():
@@ -38,3 +38,7 @@ def test_flat_payments():
 
 def test_fv():
     assert fv([1000 for _ in range(10)], 0.1, period='year') == 17531.16706110001
+
+
+def test_retirement_problem():
+    assert retirement_problem(24, 50000, 25, 0.05) == [15822.327630785972]

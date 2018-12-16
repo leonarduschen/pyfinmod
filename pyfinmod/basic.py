@@ -1,7 +1,11 @@
 from functools import partial
+from datetime import date
 from collections import defaultdict
+
+from dateutil.relativedelta import relativedelta
 import pandas as pd
 from scipy.optimize import fsolve
+
 from pyfinmod.constants import (DAYS_IN_YEAR,
                                 MONTH_IN_YEAR, 
                                 QUATERS_IN_YEAR,
@@ -94,3 +98,22 @@ def fv(deposits, annual_interest_rate, period='year'):
     for n, deposit in enumerate(deposits):
         future_value += deposit * (1 + periodic_interest)**(number_of_deposits - n)
     return future_value
+
+
+def get_retirement_cf_dataframe(deposit, terms_of_deposit, withdrawal, terms_of_withdrawal, period='year'):
+    cash_flows = [deposit]*terms_of_deposit + [-withdrawal]*terms_of_withdrawal
+    terms = terms_of_deposit + terms_of_withdrawal
+    dates = [date.today() + relativedelta(**{period + 's':i}) for i in range(terms)]
+    df = pd.DataFrame(data={'cash flow': cash_flows, 'date': dates})
+    return df
+
+
+def retirement_problem(terms_of_deposit, withdrawal, terms_of_withdrawal, annual_discount_rate, period='year'):
+    retirement_dataframe_by_deposit = partial(get_retirement_cf_dataframe,
+                                              terms_of_deposit=terms_of_deposit,
+                                              withdrawal=withdrawal,
+                                              terms_of_withdrawal=terms_of_withdrawal,
+                                              period=period)
+    f = lambda deposit: npv(retirement_dataframe_by_deposit(deposit), annual_discount_rate)
+    result = fsolve(f, withdrawal)
+    return list(result)
