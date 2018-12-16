@@ -85,3 +85,12 @@ def flat_payments(principal, annual_interest_rate, term, period='year'):
         current_principal -= current_return_of_principal
     assert round(current_principal) == 0
     return pd.DataFrame.from_dict(data)
+
+
+def fv(deposits, annual_interest_rate, period='year'):
+    periodic_interest = convert_ir(annual_interest_rate, from_period='year', to_period=period)
+    future_value = 0
+    number_of_deposits = len(deposits)
+    for n, deposit in enumerate(deposits):
+        future_value += deposit * (1 + periodic_interest)**(number_of_deposits - n)
+    return future_value

@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from pyfinmod.basic import convert_ir, npv, irr, pmt, flat_payments
+from pyfinmod.basic import convert_ir, npv, irr, pmt, flat_payments, fv
 
 
 def test_convert_ir():
@@ -35,3 +35,6 @@ def test_flat_payments():
                                       'return of principal': [4761.904761904763, 5238.09523809524]})
     assert df.equals(df_test)
 
+
+def test_fv():
+    assert fv([1000 for _ in range(10)], 0.1, period='year') == 17531.16706110001
