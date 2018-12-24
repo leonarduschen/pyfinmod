@@ -8,9 +8,9 @@ import pandas as pd
 from scipy.optimize import fsolve
 
 from pyfinmod.constants import (DAYS_IN_YEAR,
-                                MONTH_IN_YEAR, 
-                                QUATERS_IN_YEAR,
-                                MONTH_IN_QUATER,
+                                MONTH_IN_YEAR,
+                                QUARTERS_IN_YEAR,
+                                MONTH_IN_QUARTER,
                                 DAYS_IN_WEEK)
 
 
@@ -18,27 +18,27 @@ def convert_ir(r, from_period='year', to_period='day'):
     powers = {'year': {'day': 1/DAYS_IN_YEAR,
                        'week': DAYS_IN_WEEK/DAYS_IN_YEAR,
                        'month': 1/MONTH_IN_YEAR,
-                       'quarter': 1/QUATERS_IN_YEAR,
+                       'quarter': 1 / QUARTERS_IN_YEAR,
                        'year': 1},
-              'quarter': {'day': 1/(DAYS_IN_YEAR/QUATERS_IN_YEAR),
-                          'week': 1/(DAYS_IN_YEAR/QUATERS_IN_YEAR/DAYS_IN_WEEK),
-                          'month': 1/MONTH_IN_QUATER,
+              'quarter': {'day': 1/(DAYS_IN_YEAR / QUARTERS_IN_YEAR),
+                          'week': 1/(DAYS_IN_YEAR / QUARTERS_IN_YEAR / DAYS_IN_WEEK),
+                          'month': 1 / MONTH_IN_QUARTER,
                           'quarter': 1,
-                          'year': QUATERS_IN_YEAR},
+                          'year': QUARTERS_IN_YEAR},
               'month': {'day': 1/(DAYS_IN_YEAR/MONTH_IN_YEAR),
                         'week': 1/(DAYS_IN_YEAR/MONTH_IN_YEAR/DAYS_IN_WEEK),
                         'month': 1,
-                        'quarter': MONTH_IN_QUATER,
+                        'quarter': MONTH_IN_QUARTER,
                         'year': MONTH_IN_YEAR},
               'week': {'day': 1/DAYS_IN_WEEK,
                        'week': 1,
                        'month': DAYS_IN_YEAR/MONTH_IN_YEAR/DAYS_IN_WEEK,
-                       'quarter': DAYS_IN_YEAR/QUATERS_IN_YEAR/DAYS_IN_WEEK,
+                       'quarter': DAYS_IN_YEAR / QUARTERS_IN_YEAR / DAYS_IN_WEEK,
                        'year': DAYS_IN_YEAR/DAYS_IN_WEEK},
               'day': {'day': 1,
                       'week': DAYS_IN_WEEK,
                       'month': DAYS_IN_YEAR/MONTH_IN_YEAR,
-                      'quarter': DAYS_IN_YEAR/QUATERS_IN_YEAR,
+                      'quarter': DAYS_IN_YEAR / QUARTERS_IN_YEAR,
                       'year': DAYS_IN_YEAR}}
     return (1 + r)**(powers[from_period][to_period]) - 1
 
