@@ -12,6 +12,13 @@ right_rows = [('Total Liabilities', 1),
               ('Other Current Liabilities', 1)]
 
 
+right_rows_no_equity = [('Total Liabilities', 1),
+                        ('Cash And Cash Equivalents', -1),
+                        ('Total Current Liabilities', -1),
+                        ('Short/Current Long Term Debt', 1),
+                        ('Other Current Liabilities', 1)]
+
+
 def _ev(column):
     """
     Uses balance sheet to calculate enterprise value. Works only with YahooFinanceParser
@@ -24,7 +31,7 @@ def _ev(column):
     return left_sum
 
 
-def get_ev(dataframe):
+def get_enterprise_value(dataframe):
     return dataframe.apply(_ev)
 
 
@@ -41,5 +48,13 @@ def _net_working_capital(column):
     return net_receivables + inventory - acc_payable - other_curr_liabilities
 
 
-def get_nwc(dataframe):
+def get_net_working_capital(dataframe):
     return dataframe.apply(_net_working_capital)
+
+
+def _ev_em(column):
+    return sum([column[i] * sign for i, sign in right_rows_no_equity])
+
+
+def get_enterprise_value_efficient_market(dataframe, market_cap):
+    return dataframe.apply(_ev_em) + market_cap
