@@ -17,8 +17,6 @@ class YahooFinanceParser:
         self.ticker = ticker
         if data_type not in YahooFinanceParser.available_data_type:
             raise YahooParserError('Unknown data_type. Allowed values {}'.format(YahooFinanceParser.available_data_type))
-        if data_type == 'income-statement':
-            raise NotImplementedError()
         self.data_type = data_type
         self.html = None
         self.parsed_html = None
@@ -39,7 +37,8 @@ class YahooFinanceParser:
             self.html = html
         else:
             try:
-                res = requests.get(YahooFinanceParser.url_template.format(self.ticker, self.data_type),
+                data_type = self.data_type if self.data_type != 'income-statement' else 'financials'
+                res = requests.get(YahooFinanceParser.url_template.format(self.ticker, data_type),
                                    timeout=5)
             except requests.exceptions.RequestException as e:
                 raise YahooParserError('Failed to get data from Yahoo Finance {}'.format(e))
@@ -61,8 +60,9 @@ class YahooFinanceParser:
     def _html_to_df(self):
         _r = defaultdict(list)
         dates = []
+        date_row_name = 'Period Ending' if self.data_type != 'income-statement' else 'Revenue'
         for row in self.parsed_html:
-            if row[0] == 'Period Ending':
+            if row[0] == date_row_name:
                 dates = [YahooFinanceParser._date_parse(i) for i in row[1:]]
                 for i in dates:
                     _r[i] = []
