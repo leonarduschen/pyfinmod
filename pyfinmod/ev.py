@@ -58,3 +58,15 @@ def _ev_em(column):
 
 def get_enterprise_value_efficient_market(dataframe, market_cap):
     return dataframe.apply(_ev_em) + market_cap
+
+
+def get_fcf_from_cscf(income_statement_dataframe, cash_flow_dataframe):
+    net_income = cash_flow_dataframe.loc['Net Income']
+    income_tax_expence = income_statement_dataframe.loc['Income Tax Expense']
+    income_tax_rate = income_tax_expence / (net_income + income_tax_expence)
+    cash_paid_for_interest = abs(income_statement_dataframe.loc['Interest Expense'])
+    after_tax_net_interest = (1 - income_tax_rate) * cash_paid_for_interest
+    res = after_tax_net_interest + \
+          cash_flow_dataframe.loc['Total Cash Flow From Operating Activities'] + \
+          cash_flow_dataframe.loc['Total Cash Flows From Investing Activities']
+    return res
