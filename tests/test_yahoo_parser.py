@@ -54,3 +54,11 @@ def test_get_cash_flow():
 
     df_test = pd.read_hdf('./raw_data/aapl_cash_flow.hd5', key='aapl_cash_flow')
     assert df.equals(df_test)
+
+
+def test_get_market_cap():
+    with open('./raw_data/aapl_summary.txt', 'r') as f:
+        html = f.read()
+    parser = YahooFinanceParser('AAPL', 'summary')
+    assert parser.get_value('Market Cap', html=html) == 822439000000000
+

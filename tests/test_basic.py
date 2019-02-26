@@ -15,7 +15,7 @@ def test_convert_ir():
 def test_npv():
     df = pd.DataFrame(data={'cash flow': [-100] + [10] * 12,
                             'date': [date.today() + relativedelta(months=i) for i in range(13)]})
-    assert npv(df, 0.1) == approx(14.011086, abs=FLOAT_ABS)
+    assert npv(df, 0.1) == approx(14.04634, abs=FLOAT_ABS)
 
 
 def test_irr():

@@ -11,9 +11,9 @@ class YahooParserError(Exception):
 
 class YahooFinanceParser:
     url_template = 'https://finance.yahoo.com/quote/{}/{}'
-    available_data_type = ('balance-sheet', 'cash-flow', 'income-statement')
+    available_data_type = ('balance-sheet', 'cash-flow', 'income-statement', 'summary')
 
-    def __init__(self, ticker, data_type):
+    def __init__(self, ticker, data_type='summary'):
         self.ticker = ticker
         if data_type not in YahooFinanceParser.available_data_type:
             raise YahooParserError('Unknown data_type. Allowed values {}'.format(YahooFinanceParser.available_data_type))
@@ -32,6 +32,10 @@ class YahooFinanceParser:
             return 0
         return int(int_str.replace(",", ""))*1000
 
+    @staticmethod
+    def _value_parse(value_str):
+        return int(value_str.replace(".", "")[:-1]) * 10**9
+
     def _get_html(self, html=None):
         if html:
             self.html = html
@@ -48,13 +52,14 @@ class YahooFinanceParser:
         soup = BeautifulSoup(self.html, 'html.parser')
         if not soup:
             raise YahooParserError('No HTML found for {}'.format(self.ticker))
-        table = soup.table
-        if not table:
+        tables = soup.findAll("table")
+        if not tables:
             raise YahooParserError('No data found on page for {}'.format(self.ticker))
         results = []
-        for row in table('tr'):
-            aux = row.findAll('td')
-            results.append([cell.string for cell in aux])
+        for table in tables:
+            for row in table('tr'):
+                aux = row.findAll('td')
+                results.append([cell.string for cell in aux])
         self.parsed_html = results
 
     def _html_to_df(self):
@@ -75,9 +80,22 @@ class YahooFinanceParser:
         df = pd.DataFrame.from_dict(_r)
         self.df = df
 
+    def _extract_value(self, value_name):
+        for v, d in self.parsed_html:
+            if v == value_name:
+                return YahooFinanceParser._value_parse(d)
+
     def get_dataframe(self, html=None):
         self._get_html(html)
         self._parse_html()
         self._html_to_df()
         self.df = self.df.set_index('row name')
         return self.df
+
+    def get_value(self, value_name, html=None):
+        self._get_html(html)
+        self._parse_html()
+        value_data = self._extract_value(value_name)
+        if not value_data:
+            raise YahooParserError('No data found on page for {}'.format(self.ticker))
+        return value_data
