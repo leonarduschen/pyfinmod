@@ -15,9 +15,7 @@ class YahooFinanceParser:
 
     def __init__(self, ticker, data_type='summary'):
         self.ticker = ticker
-        if data_type not in YahooFinanceParser.available_data_type:
-            raise YahooParserError('Unknown data_type. Allowed values {}'.format(YahooFinanceParser.available_data_type))
-        self.data_type = data_type
+
         self.html = None
         self.parsed_html = None
         self.df = None
@@ -85,7 +83,10 @@ class YahooFinanceParser:
             if v == value_name:
                 return YahooFinanceParser._value_parse(d)
 
-    def get_dataframe(self, html=None):
+    def get_dataframe(self, data_type, html=None):
+        if data_type not in YahooFinanceParser.available_data_type:
+            raise YahooParserError('Unknown data_type. Allowed values {}'.format(YahooFinanceParser.available_data_type))
+        self.data_type = data_type
         self._get_html(html)
         self._parse_html()
         self._html_to_df()
