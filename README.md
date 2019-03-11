@@ -109,8 +109,8 @@ TBD March 2019
 
 
 ## Blog posts  <a name="blog"></a>
-1. [Basic financial calculations](https://smirnov-am.github.io/2018/12/24/basic-financial-calculations.html):
-2. [Enterprise value. Free Cash FLows](https://smirnov-am.github.io/2019/02/07/company-evaluation-pt1.html)
+1. [Basic financial calculations](https://smirnov-am.github.io/2018/12/24/basic-financial-calculations.html)
+2. [Enterprise value. Free Cash Flows](https://smirnov-am.github.io/2019/02/07/company-evaluation-pt1.html)
 
 ## Library and references  <a name="ref"></a>:
 [Financial Modeling by Simon Benninga](https://www.amazon.com/Financial-Modeling-Simon-Benninga/dp/0262026287)
