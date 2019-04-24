@@ -105,7 +105,7 @@ get_fcf_from_cscf(income_statement, cash_flow)
 ```
 
 ### Weighted average cost of capital <a name="wacc"></a>
-TBD March 2019
+TBD ~~March~~ May 2019
 
 
 ## Blog posts  <a name="blog"></a>
