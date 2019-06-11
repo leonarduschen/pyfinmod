@@ -5,10 +5,25 @@ def _company_debt(column):
     :return: series of debt values by date
     """
     long_term_debt = column['Long Term Debt']
-    shor_long_debt = column['Short/Current Long Term Debt']
+    short_long_debt = column['Short/Current Long Term Debt']
     cash = column['Cash And Cash Equivalents']
-    return long_term_debt + shor_long_debt - cash
+    return long_term_debt + short_long_debt - cash
+
+
+def _company_tax_rate(column):
+    """
+    Uses income statement to get company tax rate. Works only with YahooFinanceParser
+    :param column: Yahoo Finance page parsed to dataframe with pyfinmod.yahoo_finance.YahooFinanceParser
+    :return: series of tax rate values by date
+    """
+    income_before_tax = column['Income Before Tax']
+    income_tax_expense = column['Income Tax Expense']
+    return income_tax_expense / income_before_tax
 
 
 def get_debt(dataframe):
     return dataframe.apply(_company_debt)
+
+
+def get_tax_rate(dataframe):
+    return dataframe.apply(_company_tax_rate)
