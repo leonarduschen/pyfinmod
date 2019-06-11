@@ -15,7 +15,7 @@ class YahooFinanceParser:
 
     def __init__(self, ticker, data_type='summary'):
         self.ticker = ticker
-
+        self.data_type = data_type
         self.html = None
         self.parsed_html = None
         self.df = None
