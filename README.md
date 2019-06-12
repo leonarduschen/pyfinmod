@@ -95,12 +95,13 @@ parser = YahooFinanceParser('AAPL')
 df = parser.get_dataframe('balance-sheet')
 get_enterprise_value(df)
 ```
-Discounted cash flows:
+
+Сash flows from cash flow statement:
 ```
 from pyfinmod.ev import get_fcf_from_cscf
 aapl_parser = YahooFinanceParser('AAPL')
 balance_sheet = aapl_parser.get_dataframe('balance-sheet')
-income_statement = aapl_parser.get_dataframe('income-statement')
+cash_flow = aapl_parser.get_dataframe('cash-flow')
 get_fcf_from_cscf(income_statement, cash_flow)
 ```
 
