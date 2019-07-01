@@ -1,3 +1,7 @@
+from statistics import mean
+import pandas as pd
+
+
 def _company_debt(column):
     """
     Uses balance sheet to get company debt. Works only with YahooFinanceParser
@@ -13,7 +17,8 @@ def _company_debt(column):
 
 def _company_net_debt(column):
     """
-    Uses balance sheet to get company net debt. Works only with YahooFinanceParser
+    Uses balance sheet to get company net debt (How that's different from _company_debt?).
+    Works only with YahooFinanceParser
     :param column: Yahoo Finance page parsed to dataframe with pyfinmod.yahoo_finance.YahooFinanceParser
     :return: series of debt values by date
     """
@@ -45,4 +50,13 @@ def get_tax_rate(income_statement_dataframe):
 
 
 def get_cost_of_debt(balance_sheet_dataframe, income_statement_dataframe):
-    return balance_sheet_dataframe.apply(_company_net_debt)
+    debt = balance_sheet_dataframe.apply(_company_net_debt)
+    averages = [mean(pair) for pair in zip(debt[:-1], debt[1:])]
+    average_debt = pd.Series(averages, index=debt.index[:-1])
+    average_debt.name = 'average debt'
+    interest_paid = -1 * income_statement_dataframe.loc['Interest Expense', :]
+    interest_paid.name = 'interest paid'
+    debt_and_interest = pd.concat([average_debt, interest_paid], axis=1)
+    debt_and_interest.dropna(inplace=True)
+    res = debt_and_interest.apply(lambda x: x['interest paid'] / x['average debt'], axis=1)
+    return res
