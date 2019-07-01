@@ -31,8 +31,12 @@ class YahooFinanceParser:
         return int(int_str.replace(",", ""))*1000
 
     @staticmethod
-    def _value_parse(value_str):
+    def _billion_value_parse(value_str):
         return int(value_str.replace(".", "")[:-1]) * 10**9
+
+    @staticmethod
+    def _float_value_parse(value_str):
+        return float(value_str)
 
     def _get_html(self, html=None):
         if html:
@@ -81,7 +85,10 @@ class YahooFinanceParser:
     def _extract_value(self, value_name):
         for v, d in self.parsed_html:
             if v == value_name:
-                return YahooFinanceParser._value_parse(d)
+                if d.endswith('B'):
+                    return YahooFinanceParser._billion_value_parse(d)
+                if '.' in d:
+                    return YahooFinanceParser._float_value_parse(d)
 
     def get_dataframe(self, data_type, html=None):
         if data_type not in YahooFinanceParser.available_data_type:

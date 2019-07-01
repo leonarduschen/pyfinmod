@@ -60,3 +60,7 @@ def get_cost_of_debt(balance_sheet_dataframe, income_statement_dataframe):
     debt_and_interest.dropna(inplace=True)
     res = debt_and_interest.apply(lambda x: x['interest paid'] / x['average debt'], axis=1)
     return res
+
+
+def get_cost_of_equity(beta, risk_free_interest_rate, market_return):
+    return risk_free_interest_rate + beta * (market_return - risk_free_interest_rate)
