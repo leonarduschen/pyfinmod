@@ -1,3 +1,8 @@
+from math import sqrt
+import pandas as pd
+from pyfinmod.basic import npv
+
+
 left_rows = [('Total Assets', 1),
              ('Cash And Cash Equivalents', -1),
              ('Total Current Liabilities', -1),
@@ -70,3 +75,23 @@ def get_fcf_from_cscf(income_statement_dataframe, cash_flow_dataframe):
           cash_flow_dataframe.loc['Total Cash Flow From Operating Activities'] + \
           cash_flow_dataframe.loc['Total Cash Flows From Investing Activities']
     return res
+
+
+def dcf(fcf, wacc, short_term_growth, long_term_growth):
+    latest_fcf_date = fcf.index.max()
+    dates = pd.date_range(latest_fcf_date, periods=6, freq='365D')[1:]
+    future_cash_flows = [fcf[latest_fcf_date]]
+    for i in range(5):
+        next_year_fcf = future_cash_flows[-1] * (1 + short_term_growth)
+        future_cash_flows.append(next_year_fcf)
+    future_cash_flows = future_cash_flows[1:]
+    df = pd.DataFrame(data={'fcf': future_cash_flows,
+                            'date': dates})
+    # df.set_index('date', inplace=True)
+    df['terminal value'] = 0
+    last_index = df.index[-1]
+    last_short_term_fcf = df.at[last_index, 'fcf']
+    df.at[last_index, 'terminal value'] = last_short_term_fcf * (1 + long_term_growth) / (
+            wacc - long_term_growth)
+    df['cash flow'] = df[['fcf', 'terminal value']].apply(sum, axis=1)
+    return npv(df, wacc) * sqrt((1 + wacc))

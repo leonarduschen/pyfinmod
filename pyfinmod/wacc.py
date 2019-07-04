@@ -64,3 +64,20 @@ def get_cost_of_debt(balance_sheet_dataframe, income_statement_dataframe):
 
 def get_cost_of_equity(beta, risk_free_interest_rate, market_return):
     return risk_free_interest_rate + beta * (market_return - risk_free_interest_rate)
+
+
+def wacc(equity, balance_sheet, income_statement, beta, risk_free_interest_rate, market_return):
+    debt = get_debt(balance_sheet)
+    tax_rate = get_tax_rate(income_statement)
+    rd = get_cost_of_debt(balance_sheet, income_statement)
+    re = get_cost_of_equity(beta, risk_free_interest_rate, market_return)
+    debt.name = 'd'
+    tax_rate.name = 'tc'
+    rd.name = 'rd'
+    df = pd.concat([debt, tax_rate, rd], axis=1)
+    df['e'] = equity
+    df['re'] = re
+    df.dropna(inplace=True)
+    mean_wacc = df.apply(lambda x: (x['re'] * x['e'] + x['rd'] * x['d'] * (1 - x['tc'])) / (x['e'] + x['d']),
+                         axis=1).mean()
+    return mean_wacc
