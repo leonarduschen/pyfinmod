@@ -10,7 +10,7 @@
 3. [Yahoo Finance parser](#yahoo)
 3. [Enterprise value](#ev)
     1. [Free Cash Flows](#fcf)
-    1. [Weighted average cost of capital](#wacc)
+    1. [Weighted average cost of capital and DCF](#wacc)
 3. [Blog posts](#blog)
 3. [Library and references](#ref)
 
@@ -105,13 +105,28 @@ cash_flow = aapl_parser.get_dataframe('cash-flow')
 get_fcf_from_cscf(income_statement, cash_flow)
 ```
 
-### Weighted average cost of capital <a name="wacc"></a>
-TBD ~~March~~ May 2019
+### Weighted average cost of capital and DCF<a name="wacc"></a>
+```python
+from pyfinmod.yahoo_finance import YahooFinanceParser
+from pyfinmod.wacc import wacc
+from pyfinmod.ev import dcf
 
+parser = YahooFinanceParser('AAPL')
+e = parser.get_value('Market Cap')
+beta = parser.get_value('Beta (3Y Monthly)')
+income_statement = parser.get_dataframe('income-statement')
+balance_sheet = parser.get_dataframe('balance-sheet')
+
+aapl_wacc = wacc(e, balance_sheet, income_statement, beta,
+                 risk_free_interest_rate=0.02,
+                 market_return=0.08)
+dcf(fcf, aapl_wacc, short_term_growth=0.08, long_term_growth=0.04)
+```
 
 ## Blog posts  <a name="blog"></a>
 1. [Basic financial calculations](https://smirnov-am.github.io/2018/12/24/basic-financial-calculations.html)
 2. [Enterprise value. Free Cash Flows](https://smirnov-am.github.io/2019/02/07/company-evaluation-pt1.html)
+3. [Enterprise value. WACC and DCF](https://smirnov-am.github.io/calculating-enterprise-value-with-python-and-pandas-part-1-wacc-and-dcf/)
 
 ## Library and references  <a name="ref"></a>:
 [Financial Modeling by Simon Benninga](https://www.amazon.com/Financial-Modeling-Simon-Benninga/dp/0262026287)
