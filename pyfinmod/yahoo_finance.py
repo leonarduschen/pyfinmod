@@ -32,7 +32,7 @@ def with_driver(func, *args, **kwargs):
 
 class YahooFinanceParser:
     url_template = 'https://finance.yahoo.com/quote/{}/{}'
-    available_data_type = ('balance-sheet', 'cash-flow', 'income-statement', 'summary')
+    available_data_type = ('balance-sheet', 'cash-flow', 'income-statement')
     driver = None
     data_type = None
 
