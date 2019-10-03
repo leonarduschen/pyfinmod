@@ -1,8 +1,15 @@
 from datetime import datetime
 from collections import defaultdict
+from typing import List, Sequence, Dict
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+from envparse import env
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+CHROMEDRIVER_PATH = env('CHROMEDRIVER_PATH', cast=str, default=None)
 
 
 class YahooParserError(Exception):
@@ -13,7 +20,14 @@ class YahooFinanceParser:
     url_template = 'https://finance.yahoo.com/quote/{}/{}'
     available_data_type = ('balance-sheet', 'cash-flow', 'income-statement', 'summary')
 
-    def __init__(self, ticker, data_type='summary'):
+    def __init__(self, ticker, data_type='summary', chromedriver_path: str = None, headless: bool = True):
+        if not chromedriver_path and not CHROMEDRIVER_PATH:
+            raise YahooParserError(
+                f'Please set CHROMEDRIVER_PATH env variable or pass a chromedrive_path keyword argument.')
+        options = Options()
+        options.headless = headless
+        self.driver = webdriver.Chrome(
+            executable_path=chromedriver_path if chromedriver_path else CHROMEDRIVER_PATH)
         self.ticker = ticker
         self.data_type = data_type
         self.html = None
@@ -28,15 +42,53 @@ class YahooFinanceParser:
     def _int_parse(int_str):
         if int_str == '-':
             return 0
-        return int(int_str.replace(",", ""))*1000
+        return int(int_str.replace(",", "")) * 1000
 
     @staticmethod
     def _billion_value_parse(value_str):
-        return int(value_str.replace(".", "")[:-1]) * 10**9
+        return int(value_str.replace(".", "")[:-1]) * 10 ** 9
 
     @staticmethod
     def _float_value_parse(value_str):
         return float(value_str)
+
+    def get_income_statement(self):
+        def append_row(row):
+            nonlocal df
+            if isinstance(row, Dict):
+                df = df.append(pd.Series(row), ignore_index=True)
+            else:
+                for i in row:
+                    append_row(i)
+
+        self.driver.get(f'https://finance.yahoo.com/quote/{self.ticker}/financials?p={self.ticker}')
+        # income_statement_link = self.driver.find_element_by_xpath(
+        #     '//*[@id="Col1-1-Financials-Proxy"]/section/div[1]/div[1]/div/a[1]')
+        # income_statement_link.click()
+        table_header = self.driver.find_element_by_xpath(
+            '//*[@id="Col1-1-Financials-Proxy"]/section/div[4]/div[1]/div[1]/div[1]/div')
+        header_children = table_header.find_elements_by_css_selector("*")
+        headers = [i.text for i in header_children if hasattr(i, 'text') and i.text != ''][::2]
+
+        table_rows = self.driver.find_elements_by_class_name('rw-expnded')
+        df_list = [self._split_row(row.text, headers) for row in table_rows]
+        df = pd.DataFrame(columns=headers)
+        for i in df_list:
+            append_row(i)
+        return df
+
+    @classmethod
+    def _split_row(cls, row: str, labels: Sequence):
+        split_row = row.split('\n')
+        if len(split_row) == 1:
+            return {labels[0]: split_row[0]}
+        if len(split_row) == 2:
+            res = [row.split('\n')[0]] + row.split('\n')[1].split(' ')
+            return {i[0]: i[1] for i in zip(labels, res)}
+        else:
+            header = split_row[0]
+            data_rows = [split_row[1:][i:i + 2] for i in range(0, len(split_row[1:]), 2)]
+            return [cls._split_row(header, labels)] + [cls._split_row('\n'.join(i), labels) for i in data_rows]
 
     def _get_html(self, html=None):
         if html:
@@ -92,7 +144,8 @@ class YahooFinanceParser:
 
     def get_dataframe(self, data_type, html=None):
         if data_type not in YahooFinanceParser.available_data_type:
-            raise YahooParserError('Unknown data_type. Allowed values {}'.format(YahooFinanceParser.available_data_type))
+            raise YahooParserError(
+                'Unknown data_type. Allowed values {}'.format(YahooFinanceParser.available_data_type))
         self.data_type = data_type
         self._get_html(html)
         self._parse_html()
