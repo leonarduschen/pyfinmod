@@ -1,10 +1,10 @@
-from datetime import datetime
 from collections import defaultdict
-from typing import List, Sequence, Dict
+from datetime import datetime
+from typing import Sequence, Dict
 
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 from decorator import decorator
 from envparse import env
 from selenium import webdriver
