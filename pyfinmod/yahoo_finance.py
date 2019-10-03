@@ -13,6 +13,7 @@ from selenium.webdriver.chrome.options import Options
 CHROMEDRIVER_PATH = env('CHROMEDRIVER_PATH', cast=str, default=None)
 HEADLESS = env('HEADLESS', cast=bool, default=True)
 
+
 class YahooParserError(Exception):
     pass
 
