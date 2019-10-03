@@ -23,6 +23,12 @@ Python using pandas library.
 pip install -e git+https://github.com/smirnov-am/pyfinmod.git#egg=pyfinmod
 ```
 
+Since recent changes in Yahoo Finance website it is not possible any more to get data directly from the html source. Instead
+we need to use Selenium Webdriver to render the scripted table.
+
+You need to specify `CHROMEDRIVER_PATH` environment variable or initialize `YahooFinanceParser` with the path to ChromeDriver 
+executable.
+
 ## Basic calculations <a name="basic"></a>
 ### Net present Value <a name="npv"></a>
 ```
