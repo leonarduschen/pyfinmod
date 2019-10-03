@@ -5,29 +5,42 @@ from typing import List, Sequence, Dict
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+from decorator import decorator
 from envparse import env
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 CHROMEDRIVER_PATH = env('CHROMEDRIVER_PATH', cast=str, default=None)
-
+HEADLESS = env('HEADLESS', cast=bool, default=True)
 
 class YahooParserError(Exception):
     pass
 
 
+@decorator
+def with_driver(func, *args, **kwargs):
+    self = args[0]
+    options = Options()
+    options.headless = HEADLESS
+    driver = webdriver.Chrome(
+        executable_path=self._chromedriver_path, options=options)
+    self.driver = driver
+    res = func(*args, **kwargs)
+    self.driver.close()
+    self.driver = None
+    return res
+
+
 class YahooFinanceParser:
     url_template = 'https://finance.yahoo.com/quote/{}/{}'
     available_data_type = ('balance-sheet', 'cash-flow', 'income-statement', 'summary')
+    driver = None
 
     def __init__(self, ticker, data_type='summary', chromedriver_path: str = None, headless: bool = True):
         if not chromedriver_path and not CHROMEDRIVER_PATH:
             raise YahooParserError(
                 f'Please set CHROMEDRIVER_PATH env variable or pass a chromedrive_path keyword argument.')
-        options = Options()
-        options.headless = headless
-        self.driver = webdriver.Chrome(
-            executable_path=chromedriver_path if chromedriver_path else CHROMEDRIVER_PATH)
+        self._chromedriver_path = chromedriver_path if chromedriver_path else CHROMEDRIVER_PATH
         self.ticker = ticker
         self.data_type = data_type
         self.html = None
@@ -52,6 +65,7 @@ class YahooFinanceParser:
     def _float_value_parse(value_str):
         return float(value_str)
 
+    @with_driver
     def get_income_statement(self):
         def append_row(row):
             nonlocal df
@@ -62,20 +76,34 @@ class YahooFinanceParser:
                     append_row(i)
 
         self.driver.get(f'https://finance.yahoo.com/quote/{self.ticker}/financials?p={self.ticker}')
-        # income_statement_link = self.driver.find_element_by_xpath(
-        #     '//*[@id="Col1-1-Financials-Proxy"]/section/div[1]/div[1]/div/a[1]')
-        # income_statement_link.click()
         table_header = self.driver.find_element_by_xpath(
             '//*[@id="Col1-1-Financials-Proxy"]/section/div[4]/div[1]/div[1]/div[1]/div')
         header_children = table_header.find_elements_by_css_selector("*")
-        headers = [i.text for i in header_children if hasattr(i, 'text') and i.text != ''][::2]
+        headers = self._parse_headers([i.text for i in header_children if hasattr(i, 'text') and i.text != ''][::2])
 
         table_rows = self.driver.find_elements_by_class_name('rw-expnded')
         df_list = [self._split_row(row.text, headers) for row in table_rows]
         df = pd.DataFrame(columns=headers)
         for i in df_list:
             append_row(i)
+        df = df.replace('-', 0)
+        df = df.fillna(0)
+        df[df.columns[1:]] = df[df.columns[1:]].astype(str).applymap(
+            lambda x: int(x.replace(',', '')) if '.' not in x else float(x))
+        first_column = df.columns[0]
+        df.index = df[first_column]
+        df = df.drop(axis='columns', labels=[first_column, 'TTM'])
         return df
+
+    @classmethod
+    def _parse_headers(cls, headers: Sequence):
+        res = []
+        for i in headers:
+            try:
+                res.append(datetime.strptime(i, '%m/%d/%Y'))
+            except ValueError:
+                res.append(i)
+        return res
 
     @classmethod
     def _split_row(cls, row: str, labels: Sequence):
@@ -147,9 +175,9 @@ class YahooFinanceParser:
             raise YahooParserError(
                 'Unknown data_type. Allowed values {}'.format(YahooFinanceParser.available_data_type))
         self.data_type = data_type
-        self._get_html(html)
-        self._parse_html()
-        self._html_to_df()
+        # self._get_html(html)
+        # self._parse_html()
+        # self._html_to_df()
         self.df = self.df.set_index('row name')
         return self.df
 

@@ -15,6 +15,7 @@ setup(name='pyfinmod',
                         'beautifulsoup4>=4.7.1',
                         'tables>=3.4.4',
                         'selenium==3.141.0 ',
-                        'envparse==0.1.1'],
+                        'envparse==0.1.1',
+                        'decorator==4.4.0'],
       packages=find_packages(),
       data_files=[('', [])])
