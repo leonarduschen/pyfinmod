@@ -66,7 +66,7 @@ class YahooFinanceParser:
         return float(value_str)
 
     @with_driver
-    def get_income_statement(self):
+    def _get_income_statement(self):
         def append_row(row):
             nonlocal df
             if isinstance(row, Dict):
