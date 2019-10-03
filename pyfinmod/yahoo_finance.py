@@ -76,6 +76,9 @@ class YahooFinanceParser:
                 for i in row:
                     append_row(i)
 
+        if hasattr(self, '_income_statement_df'):
+            return self._income_statement_df.copy()
+
         self.driver.get(f'https://finance.yahoo.com/quote/{self.ticker}/financials?p={self.ticker}')
         table_header = self.driver.find_element_by_xpath(
             '//*[@id="Col1-1-Financials-Proxy"]/section/div[4]/div[1]/div[1]/div[1]/div')
@@ -94,7 +97,8 @@ class YahooFinanceParser:
         first_column = df.columns[0]
         df.index = df[first_column]
         df = df.drop(axis='columns', labels=[first_column, 'TTM'])
-        return df
+        self._income_statement_df = df
+        return self._income_statement_df.copy()
 
     @classmethod
     def _parse_headers(cls, headers: Sequence):
