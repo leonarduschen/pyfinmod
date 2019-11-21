@@ -40,6 +40,7 @@ class Financials:
         except requests.exceptions.RequestException as e:
             raise ParserError("Failed to get data from external api {}".format(e))
         json = res.json()
+        print(json)
         if not json:
             raise ParserError("empty response from api")
         return json
@@ -63,7 +64,7 @@ class Financials:
             else:
                 json_data = self._fetch_json("profile")["profile"]
                 setattr(self, cached_value_key, json_data)
-                return json_data.get(item)
+                return float(json_data.get(item, 0))
 
     def _json_to_df(self, json):
         _r = defaultdict(list)
