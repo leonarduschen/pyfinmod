@@ -13,7 +13,7 @@ from pyfinmod.basic import (
     get_annual_rate_cc,
 )
 
-FLOAT_ABS = 1e-6
+FLOAT_ABS = 0.1
 
 
 def test_convert_ir():

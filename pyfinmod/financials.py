@@ -76,12 +76,5 @@ class Financials:
             ]
 
         df = pd.DataFrame.from_dict(_r)
+        df = df.set_index('row name')
         return df
-
-
-# if __name__ == "__main__":
-# parser = Financials("AAPL")
-# print(parser.balance_sheet_statement)
-# print(parser.cash_flow_statement)
-# print(parser.income_statement)
-# print(parser.mktCap)

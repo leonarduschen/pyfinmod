@@ -3,95 +3,78 @@ import pandas as pd
 from pyfinmod.basic import npv
 
 
-left_rows = [('Total Assets', 1),
-             ('Cash And Cash Equivalents', -1),
-             ('Total Current Liabilities', -1),
-             ('Short/Current Long Term Debt', 1),
-             ('Other Current Liabilities', 1)]
-
-right_rows = [('Total Liabilities', 1),
-              ('Total Stockholder Equity', +1),
-              ('Cash And Cash Equivalents', -1),
-              ('Total Current Liabilities', -1),
-              ('Short/Current Long Term Debt', 1),
-              ('Other Current Liabilities', 1)]
-
-
-right_rows_no_equity = [('Total Liabilities', 1),
-                        ('Cash And Cash Equivalents', -1),
-                        ('Total Current Liabilities', -1),
-                        ('Short/Current Long Term Debt', 1),
-                        ('Other Current Liabilities', 1)]
-
-
-def _ev(column):
-    """
-    Uses balance sheet to calculate enterprise value. Works only with YahooFinanceParser
-    :param column: Yahoo Finance page parsed to dataframe with pyfinmod.yahoo_finance.YahooFinanceParser
-    :return: series of enterprise values by date
-    """
-    left_sum = sum([column[i]*sign for i, sign in left_rows])
-    right_sum = sum([column[i]*sign for i, sign in right_rows])
-    assert left_sum == right_sum
-    return left_sum
-
-
-def get_enterprise_value(dataframe):
-    return dataframe.apply(_ev)
+def enterprise_value(balance_sheet):
+    nvc = net_working_capital(balance_sheet)
+    nc_assets = balance_sheet.loc["Total non-current assets"]
+    other_assets = balance_sheet.loc["Other Assets"]
+    return nvc + nc_assets + other_assets
 
 
 def _net_working_capital(column):
     """
-    Uses balance sheet to net working capital. Works only with YahooFinanceParser
-    :param column: Yahoo Finance page parsed to dataframe with pyfinmod.yahoo_finance.YahooFinanceParser
-    :return: series of enterprise values by date
+    Uses balance sheet to net working capital
     """
-    net_receivables = column['Net Receivables']
-    inventory = column['Inventory']
-    acc_payable = column['Accounts Payable']
-    other_curr_liabilities = column['Other Current Liabilities']
-    return net_receivables + inventory - acc_payable - other_curr_liabilities
+    current_assets = column["Total current assets"]
+    current_liabilities = column["Total current liabilities"]
+    return current_assets - current_liabilities
 
 
-def get_net_working_capital(dataframe):
-    return dataframe.apply(_net_working_capital)
+def net_working_capital(balance_sheet):
+    return balance_sheet.apply(_net_working_capital)
 
 
-def _ev_em(column):
-    return sum([column[i] * sign for i, sign in right_rows_no_equity])
+def _net_debt(column):
+    """
+    Uses balance sheet to get company net debt
+    """
+    long_term_debt = column["Long-term debt"]
+    short_long_debt = column["Short-term debt"]
+    cash = column["Cash and cash equivalents"]
+    short_investments = column["Short-term investments"]
+
+    return long_term_debt + short_long_debt - cash - short_investments
 
 
-def get_enterprise_value_efficient_market(dataframe, market_cap):
-    return dataframe.apply(_ev_em) + market_cap
+def net_debt(balance_sheet):
+    return balance_sheet.apply(_net_debt)
 
 
-def get_fcf_from_cscf(income_statement_dataframe, cash_flow_dataframe):
-    net_income = cash_flow_dataframe.loc['Net Income']
-    income_tax_expence = income_statement_dataframe.loc['Income Tax Expense']
-    income_tax_rate = income_tax_expence / (net_income + income_tax_expence)
-    cash_paid_for_interest = abs(income_statement_dataframe.loc['Interest Expense'])
-    after_tax_net_interest = (1 - income_tax_rate) * cash_paid_for_interest
-    res = after_tax_net_interest + \
-          cash_flow_dataframe.loc['Total Cash Flow From Operating Activities'] + \
-          cash_flow_dataframe.loc['Total Cash Flows From Investing Activities']
-    return res
+def enterprise_value_efficient_market(balance_sheet, market_cap):
+    nd = net_debt(balance_sheet)
+    most_recent_net_debt = nd.loc[max(nd.index)]
+    return market_cap + most_recent_net_debt
+
+
+def fcf(cash_flow):
+    # net_income = income_statement.loc["Net Income"]
+    # income_tax_expense = income_statement.loc["Income Tax Expense"]
+    # income_tax_rate = income_tax_expense / (net_income + income_tax_expense)
+    # cash_paid_for_interest = abs(income_statement.loc["Interest Expense"])
+    # after_tax_net_interest = (1 - income_tax_rate) * cash_paid_for_interest
+    # res = (
+    #     after_tax_net_interest
+    #     + cash_flow.loc["Investing Cash flow"]
+    #     + cash_flow.loc["Operating Cash Flow"]
+    #     + cash_flow.loc["Financing Cash Flow"]
+    # )
+    return cash_flow.loc["Free Cash Flow"]
 
 
 def dcf(fcf, wacc, short_term_growth, long_term_growth):
     latest_fcf_date = fcf.index.max()
-    dates = pd.date_range(latest_fcf_date, periods=6, freq='365D')[1:]
+    dates = pd.date_range(latest_fcf_date, periods=6, freq="365D")[1:]
     future_cash_flows = [fcf[latest_fcf_date]]
     for i in range(5):
         next_year_fcf = future_cash_flows[-1] * (1 + short_term_growth)
         future_cash_flows.append(next_year_fcf)
     future_cash_flows = future_cash_flows[1:]
-    df = pd.DataFrame(data={'fcf': future_cash_flows,
-                            'date': dates})
+    df = pd.DataFrame(data={"fcf": future_cash_flows, "date": dates})
     # df.set_index('date', inplace=True)
-    df['terminal value'] = 0
+    df["terminal value"] = 0
     last_index = df.index[-1]
-    last_short_term_fcf = df.at[last_index, 'fcf']
-    df.at[last_index, 'terminal value'] = last_short_term_fcf * (1 + long_term_growth) / (
-            wacc - long_term_growth)
-    df['cash flow'] = df[['fcf', 'terminal value']].apply(sum, axis=1)
+    last_short_term_fcf = df.at[last_index, "fcf"]
+    df.at[last_index, "terminal value"] = (
+        last_short_term_fcf * (1 + long_term_growth) / (wacc - long_term_growth)
+    )
+    df["cash flow"] = df[["fcf", "terminal value"]].apply(sum, axis=1)
     return npv(df, wacc) * sqrt((1 + wacc))

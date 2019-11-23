@@ -45,7 +45,6 @@ def test_get_cash_flow():
 
     df = parser.cash_flow_statement
     assert not df.empty
-
     df_test = pd.read_hdf("./raw_data/aapl_cash_flow.hdf", key="aapl_cash_flow")
     assert df.equals(df_test)
 
@@ -58,4 +57,3 @@ def test_get_market_cap():
 
     mktCap = parser.mktCap
     assert mktCap == float(1213843845240.0)
-
