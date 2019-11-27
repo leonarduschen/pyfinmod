@@ -17,6 +17,8 @@ setup(
         "tables>=3.4.4",
     ],
     tests_require=["pytests"],
+    extras_require={"tests": "pytests"},
+    include_package_data=True,
     packages=find_packages(),
     data_files=[("", [])],
 )
