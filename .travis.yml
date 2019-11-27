@@ -5,7 +5,7 @@ python:
   - "3.7"
 
 install:
-  - pip install pytest
+  - pip install -e '.[tests]'
 
 script:
   - pytest tests
