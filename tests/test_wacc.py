@@ -27,7 +27,6 @@ def test_cost_of_debt():
         "./raw_data/aapl_income_statement.hdf", key="aapl_income_statement"
     )
     df_res = cost_of_debt(balance_sheet, income_statement)
-    df_res.to_hdf("./raw_data/aapl_cost_of_debt.hdf", key="aapl_cost_of_debt")
     df_out = pd.read_hdf("./raw_data/aapl_cost_of_debt.hdf", key="aapl_cost_of_debt")
     assert df_res.equals(df_out)
 
