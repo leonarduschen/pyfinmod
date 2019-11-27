@@ -40,7 +40,6 @@ class Financials:
         except requests.exceptions.RequestException as e:
             raise ParserError("Failed to get data from external api {}".format(e))
         json = res.json()
-        print(json)
         if not json:
             raise ParserError("empty response from api")
         return json
@@ -76,5 +75,5 @@ class Financials:
             ]
 
         df = pd.DataFrame.from_dict(_r)
-        df = df.set_index('row name')
+        df = df.set_index("row name")
         return df

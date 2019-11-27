@@ -46,25 +46,14 @@ def enterprise_value_efficient_market(balance_sheet, market_cap):
 
 
 def fcf(cash_flow):
-    # net_income = income_statement.loc["Net Income"]
-    # income_tax_expense = income_statement.loc["Income Tax Expense"]
-    # income_tax_rate = income_tax_expense / (net_income + income_tax_expense)
-    # cash_paid_for_interest = abs(income_statement.loc["Interest Expense"])
-    # after_tax_net_interest = (1 - income_tax_rate) * cash_paid_for_interest
-    # res = (
-    #     after_tax_net_interest
-    #     + cash_flow.loc["Investing Cash flow"]
-    #     + cash_flow.loc["Operating Cash Flow"]
-    #     + cash_flow.loc["Financing Cash Flow"]
-    # )
     return cash_flow.loc["Free Cash Flow"]
 
 
-def dcf(fcf, wacc, short_term_growth, long_term_growth):
-    latest_fcf_date = fcf.index.max()
+def dcf(fcfs, wacc, short_term_growth, long_term_growth):
+    latest_fcf_date = fcfs.index.max()
     dates = pd.date_range(latest_fcf_date, periods=6, freq="365D")[1:]
-    future_cash_flows = [fcf[latest_fcf_date]]
-    for i in range(5):
+    future_cash_flows = [fcfs[latest_fcf_date]]
+    for i in range(5): # 5?
         next_year_fcf = future_cash_flows[-1] * (1 + short_term_growth)
         future_cash_flows.append(next_year_fcf)
     future_cash_flows = future_cash_flows[1:]

@@ -51,9 +51,9 @@ def test_get_cash_flow():
 
 def test_get_market_cap():
     parser = Financials("AAPL")
-    with open("./raw_data/aapl_summary.txt", "r") as f:
+    parser._fetch_json("profile")
+    with open("./raw_data/aapl_summary.json", "r") as f:
         json_data = json.load(f)
     parser._fetch_json = lambda x: json_data
-
     mktCap = parser.mktCap
-    assert mktCap == float(1213843845240.0)
+    assert mktCap == float(1230468047640.00)
