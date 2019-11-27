@@ -8,4 +8,4 @@ install:
   - pip install -e '.[tests]'
 
 script:
-  - pytest tests
+  - cd tests && pytest tests
