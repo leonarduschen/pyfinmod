@@ -26,7 +26,7 @@ class Financials:
 
     @staticmethod
     def _date_parse(date_str):
-        return datetime.strptime(date_str, "%Y-%m-%d")
+        return datetime.strptime(date_str, "%Y-%m-%d").date()
 
     def _fetch_json(self, data_type):
         try:

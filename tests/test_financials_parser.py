@@ -1,11 +1,11 @@
-from datetime import datetime
+from datetime import date
 import pandas as pd
 from pyfinmod.financials import Financials
 import json
 
 
 def test_date_parser():
-    assert Financials._date_parse("2018-9-29") == datetime(2018, 9, 29, 0, 0)
+    assert Financials._date_parse("2018-9-29") == date(2018, 9, 29)
 
 
 def test_get_balance_sheet():
@@ -45,6 +45,7 @@ def test_get_cash_flow():
 
     df = parser.cash_flow_statement
     assert not df.empty
+
     df_test = pd.read_hdf("./raw_data/aapl_cash_flow.hdf", key="aapl_cash_flow")
     assert df.equals(df_test)
 
