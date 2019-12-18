@@ -41,4 +41,4 @@ def test_wacc():
     res_wacc = wacc(
         1230468047640.00, balance_sheet, income_statement, 1.139593, 0.02, 0.08
     )
-    assert res_wacc == 0.08321195980062189
+    assert res_wacc == 0.08476104586043534

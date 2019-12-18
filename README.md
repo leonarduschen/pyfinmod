@@ -41,13 +41,7 @@ Easiest way to install is to use pip
 ## Support
 
 1. Create and issue in this repo
-
-OR
-
 2. Send me am email msc.smirnov.am+pyfinmod@gmail.com
-
-OR
-
 3. Shoot me a message in [Linkedin](https://www.linkedin.com/in/smirnovam/)
 
 [![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/default-orange.png)](https://www.buymeacoffee.com/smirnovam)

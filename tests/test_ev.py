@@ -12,7 +12,6 @@ def test_nwc():
     df_in = pd.read_hdf("./raw_data/aapl_balance_sheet.hdf", key="aapl_balance_sheet")
     df_res = net_working_capital(df_in)
     df_out = pd.read_hdf("./raw_data/aapl_nwc.hdf", key="aapl_nwc")
-    print(df_res, df_out)
     assert df_res.equals(df_out)
 
 

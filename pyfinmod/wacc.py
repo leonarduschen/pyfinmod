@@ -32,9 +32,13 @@ def cost_of_debt(balance_sheet, income_statement):
     interest_paid = -1 * income_statement.loc["Interest Expense", :]
     interest_paid.name = "interest paid"
     debt_and_interest = pd.concat([average_debt, interest_paid], axis=1)
+
     debt_and_interest.dropna(inplace=True)
     res = debt_and_interest.apply(
-        lambda x: x["interest paid"] / x["average debt"], axis=1
+        lambda x: float(x["interest paid"]) / float(x["average debt"])
+        if x["average debt"]
+        else 0,
+        axis=1,
     )
     return res
 
