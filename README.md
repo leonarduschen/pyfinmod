@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/smirnov-am/pyfinmod.svg?branch=master)](https://travis-ci.org/smirnov-am/pyfinmod)
-
+[![pypi](https://img.shields.io/pypi/v/pyfinmod.svg)](https://img.shields.io/pypi/v/pyfinmod)
+[![pypi](https://img.shields.io/pypi/v/pyfinmod.svg)](https://img.shields.io/pypi/v/pyfinmod)
+[![Documentation Status](https://readthedocs.org/projects/pyfinmod/badge/?version=latest)](https://pyfinmod.readthedocs.io/en/latest/?badge=latest)
 ## Financial modelling with Python and Pandas
 
 Implemented functions:

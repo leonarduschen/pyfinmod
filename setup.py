@@ -8,6 +8,7 @@ setup(
     version="0.2",
     description="Financial modelling in Python",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/smirnov-am/pyfinmod",
     author="Alexey Smirnov",
     author_email="msc.smirnov.am@gmail.com",
