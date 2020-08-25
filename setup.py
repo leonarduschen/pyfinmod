@@ -21,7 +21,7 @@ setup(
         "requests>=2.21.0",
         "tables>=3.4.4",
     ],
-    tests_require=["pytests"],
+    tests_require=["pytest"],
     include_package_data=True,
     packages=find_packages(),
     data_files=[("", [])],
