@@ -28,7 +28,7 @@ def test_cost_of_debt():
     )
     df_res = cost_of_debt(balance_sheet, income_statement)
     df_out = pd.read_hdf("./raw_data/aapl_cost_of_debt.hdf", key="aapl_cost_of_debt")
-    assert df_res.equals(df_out)
+    assert df_res.sort_index().equals(df_out.sort_index())
 
 
 def test_wacc():
