@@ -19,14 +19,19 @@ Implemented functions:
 Based on this book [Financial Modeling by Simon Benninga](https://www.amazon.com/Financial-Modeling-Simon-Benninga/dp/0262026287)
 
 ### Changelog
+**v0.2.1**:
+- Fixed failed tests
+- Integrate code coverage
+- Cleaned-up code, relative paths, broken links
+
 **v0.2**:
-- switched to financialmodelingprep.com API for financials
-- pypi release
+- Switched to financialmodelingprep.com API for financials
+- PyPI release
 - readthedocs release
 
 ### Features in the next releases
-- optimal portfolio calculation
-- caching of API results
+- Optimal portfolio calculation
+- Caching of API results
 
 ## Documentation
 
@@ -38,11 +43,16 @@ Easiest way to install is to use pip
 
 `pip install pyfinmod`
 
+## Contributing
+
+All contributions in the form of pull-requests and issue reports are welcome.
 
 ## Support
 
-1. Create and issue in this repo
-2. Send me am email msc.smirnov.am+pyfinmod@gmail.com
-3. Shoot me a message in [Linkedin](https://www.linkedin.com/in/smirnovam/)
+This package is originally created by Alexey Smirnov. All credits to him for his awesome work.
+
+1. Send him am email msc.smirnov.am+pyfinmod@gmail.com
+2. Shoot him a message in [Linkedin](https://www.linkedin.com/in/smirnovam/)
+3. Buy him a coffee here
 
 [![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/default-orange.png)](https://www.buymeacoffee.com/smirnovam)
