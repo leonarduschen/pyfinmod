@@ -1,6 +1,8 @@
-[![Build Status](https://travis-ci.org/smirnov-am/pyfinmod.svg?branch=master)](https://travis-ci.org/smirnov-am/pyfinmod)
 [![pypi](https://img.shields.io/pypi/v/pyfinmod.svg)](https://img.shields.io/pypi/v/pyfinmod)
+[![Build Status](https://travis-ci.com/leonarduschen/pyfinmod.svg?branch=master)](https://travis-ci.com/leonarduschen/pyfinmod)
+[![codecov](https://codecov.io/gh/leonarduschen/pyfinmod/branch/master/graph/badge.svg)](https://codecov.io/gh/leonarduschen/pyfinmod)
 [![Documentation Status](https://readthedocs.org/projects/pyfinmod/badge/?version=latest)](https://pyfinmod.readthedocs.io/en/latest/?badge=latest)
+
 ## Financial modelling with Python and Pandas
 
 Implemented functions:
@@ -29,8 +31,6 @@ Based on this book [Financial Modeling by Simon Benninga](https://www.amazon.com
 ## Documentation
 
 The latest docs are available [here](https://pyfinmod.readthedocs.io/en/latest/).
-Blog posts [1](https://smirnov-am.github.io/2019/02/07/company-evaluation-pt1.html)
-and [2](https://smirnov-am.github.io/calculating-enterprise-value-with-python-and-pandas-part-1-wacc-and-dcf/) are referring to version 0.1 and are not updated.
 
 
 ## Installation
