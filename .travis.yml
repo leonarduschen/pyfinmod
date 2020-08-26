@@ -3,10 +3,15 @@ language: python
 python:
   - "3.6"
   - "3.7"
+  - "3.8"
 
 install:
-  - pip install -e '.[tests]'
+  - "python setup.py install"
+  - "pip install codecov"
+  - "pip install pytest-cov"
 
 script:
-  - cd tests
-  - pytest .
+  - py.test --cov-report=xml --cov=pyfinmod tests/
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)

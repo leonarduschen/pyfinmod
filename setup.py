@@ -5,13 +5,15 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pyfinmod",
-    version="0.2",
+    version="0.2.1",
     description="Financial modelling in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/smirnov-am/pyfinmod",
+    url="https://github.com/leonarduschen/pyfinmod",
     author="Alexey Smirnov",
     author_email="msc.smirnov.am@gmail.com",
+    maintainer="leonarduschen",
+    maintainer_email="leonardus.chen@gmail.com",
     license="MIT",
     scripts=[],
     install_requires=[
@@ -22,7 +24,8 @@ setup(
         "tables>=3.4.4",
     ],
     tests_require=["pytest"],
+    setup_requires=['pytest-runner'],
     include_package_data=True,
-    packages=find_packages(),
+    packages=find_packages(exclude=('tests', 'docs')),
     data_files=[("", [])],
 )
