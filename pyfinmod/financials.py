@@ -9,8 +9,8 @@ class ParserError(Exception):
 
 
 class Financials:
-    url_financials = "https://financialmodelingprep.com/api/v3/financials/{}/{}"
-    url_profile = "https://financialmodelingprep.com/api/v3/company/profile/{}"
+    url_financials = "https://financialmodelingprep.com/api/v3/financials/{}/{}?apikey=demo"
+    url_profile = "https://financialmodelingprep.com/api/v3/company/profile/{}?apikey=demo"
     available_data_type = (
         "balance_sheet_statement",
         "cash_flow_statement",
