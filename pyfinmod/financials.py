@@ -9,8 +9,8 @@ class ParserError(Exception):
 
 
 class Financials:
-    url_financials = "https://financialmodelingprep.com/api/v3/financials/{}/{}"
-    url_profile = "https://financialmodelingprep.com/api/v3/company/profile/{}"
+    url_financials = "https://financialmodelingprep.com/api/v3/financials/{}/{}?apikey=demo"
+    url_profile = "https://financialmodelingprep.com/api/v3/company/profile/{}?apikey=demo"
     available_data_type = (
         "balance_sheet_statement",
         "cash_flow_statement",
@@ -59,7 +59,7 @@ class Financials:
             cached_value_key = "_profile"
             cached_value = getattr(self, cached_value_key, None)
             if cached_value:
-                return cached_value.get(item)
+                return float(cached_value.get(item))
             else:
                 json_data = self._fetch_json("profile")["profile"]
                 setattr(self, cached_value_key, json_data)
