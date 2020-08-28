@@ -19,6 +19,10 @@ Implemented functions:
 Based on this book [Financial Modeling by Simon Benninga](https://www.amazon.com/Financial-Modeling-Simon-Benninga/dp/0262026287)
 
 ### Changelog
+**v0.2.2**:
+- Fixed broken API link
+- Fixed minor bugs
+
 **v0.2.1**:
 - Fixed failed tests
 - Integrate code coverage
