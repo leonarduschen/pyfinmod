@@ -59,7 +59,7 @@ class Financials:
             cached_value_key = "_profile"
             cached_value = getattr(self, cached_value_key, None)
             if cached_value:
-                return cached_value.get(item)
+                return float(cached_value.get(item))
             else:
                 json_data = self._fetch_json("profile")["profile"]
                 setattr(self, cached_value_key, json_data)
