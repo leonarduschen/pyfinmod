@@ -35,6 +35,20 @@ class Financials:
     def _date_parse(date_str):
         return datetime.strptime(date_str, "%Y-%m-%d").date()
 
+    @staticmethod
+    def _json_to_df(json):
+        _r = defaultdict(list)
+        keys = [i for i in json[0].keys() if i != "date"]
+        _r["Items"] = keys
+        for row in json:
+            _r[Financials._date_parse(row["date"])] = [
+                float(v) for k, v in row.items() if k in keys
+            ]
+
+        df = pd.DataFrame.from_dict(_r)
+        df = df.set_index("Items")
+        return df
+
     def _fetch_json(self, datatype):
         try:
             url = self.datatypes[datatype].format(self.ticker)
@@ -47,20 +61,15 @@ class Financials:
                 raise ParserError("Empty response from external API")
             return json
 
-    def _json_to_df(self, json):
-        _r = defaultdict(list)
-        keys = [i for i in json[0].keys() if i != "date"]
-        _r["Items"] = keys
-        for row in json:
-            _r[self._date_parse(row["date"])] = [
-                float(v) for k, v in row.items() if k in keys
-            ]
-
-        df = pd.DataFrame.from_dict(_r)
-        df = df.set_index("Items")
-        return df
-
     def __getattr__(self, name):
+        """Return financial data stored as attribute
+
+
+        If balance sheet, cash flow statement, or income statement is requested then return a pd.DataFrame.
+        If profile is requested then return a dictionary (JSON format).
+        Otherwise, attempt to search self.profile for the requested data and return the corresponding value if found.
+
+        """
         if name in ["balance_sheet_statement", "cash_flow_statement", "income_statement"]:
             cached_value = getattr(self, "_" + name, None)
             if cached_value:
