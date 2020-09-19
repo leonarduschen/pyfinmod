@@ -33,10 +33,18 @@ class Financials:
 
     @staticmethod
     def _date_parse(date_str):
+        """Parse dates and then convert from datetime.datetime to datetime.date
+
+        """
         return datetime.strptime(date_str, "%Y-%m-%d").date()
 
     @staticmethod
     def _json_to_df(json):
+        """Convert JSON to pd.DataFrame
+
+        To be used for balance_sheet_statement, cash_flow_statement, and income_statement only
+
+        """
         _r = defaultdict(list)
         keys = [i for i in json[0].keys() if i != "date"]
         _r["Items"] = keys
@@ -50,6 +58,9 @@ class Financials:
         return df
 
     def _fetch_json(self, datatype):
+        """Fetch the requested datatype from the corresponding URL provided in self.datatype class variable
+
+        """
         try:
             url = self.datatypes[datatype].format(self.ticker)
             res = requests.get(url, timeout=5)
