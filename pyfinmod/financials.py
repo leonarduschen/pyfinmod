@@ -83,7 +83,7 @@ class Financials:
         """
         if name in ["balance_sheet_statement", "cash_flow_statement", "income_statement"]:
             cached_value = getattr(self, "_" + name, None)
-            if cached_value:
+            if cached_value is not None:
                 return cached_value
             else:
                 json_data = self._fetch_json(name)["financials"]
@@ -92,7 +92,7 @@ class Financials:
                 return df
         elif name in ["profile"]:
             cached_value = getattr(self, "_" + name, None)
-            if cached_value:
+            if cached_value is not None:
                 return cached_value
             else:
                 json_data = self._fetch_json(name)["profile"]
