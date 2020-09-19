@@ -50,33 +50,34 @@ class Financials:
     def _json_to_df(self, json):
         _r = defaultdict(list)
         keys = [i for i in json[0].keys() if i != "date"]
-        _r["row name"] = keys
+        _r["Items"] = keys
         for row in json:
             _r[self._date_parse(row["date"])] = [
                 float(v) for k, v in row.items() if k in keys
             ]
 
         df = pd.DataFrame.from_dict(_r)
-        df = df.set_index("row name")
+        df = df.set_index("Items")
         return df
 
-    def __getattr__(self, item):
-        if item in self.datatypes:
-            cached_value_key = "_" + item
-            cached_value = getattr(self, cached_value_key, None)
+    def __getattr__(self, name):
+        if name in ["balance_sheet_statement", "cash_flow_statement", "income_statement"]:
+            cached_value = getattr(self, "_" + name, None)
             if cached_value:
                 return cached_value
             else:
-                json_data = self._fetch_json(item)["financials"]
+                json_data = self._fetch_json(name)["financials"]
                 df = self._json_to_df(json_data)
-                setattr(self, cached_value_key, df)
+                setattr(self, "_" + name, df)
                 return df
-        else:
-            cached_value_key = "_profile"
-            cached_value = getattr(self, cached_value_key, None)
+        elif name in ["profile"]:
+            cached_value = getattr(self, "_" + name, None)
             if cached_value:
-                return float(cached_value.get(item))
+                return cached_value
             else:
-                json_data = self._fetch_json("profile")["profile"]
-                setattr(self, cached_value_key, json_data)
-                return float(json_data.get(item, 0))
+                json_data = self._fetch_json(name)["profile"]
+                setattr(self, "_" + name, json_data)
+                return json_data
+        else:
+            json_data = self.profile
+            return float(json_data.get(name, 0))
