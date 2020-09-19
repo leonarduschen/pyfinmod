@@ -1,5 +1,6 @@
 import os
 import json
+from json import JSONDecodeError
 from datetime import date
 import pandas as pd
 import pytest
@@ -24,10 +25,13 @@ def test_json_to_df():
 def test_fetch_json():
     parser = Financials("AAPL")
     parser.datatypes["balance_sheet_statement"] = "NotaValidURL"
-  
+    parser.datatypes["cash_flow_statement"] = "https://www.google.com"
+ 
     # Wrong url should raise ParseError
     with pytest.raises(ParserError):
         parser._fetch_json("balance_sheet_statement")
+    with pytest.raises(JSONDecodeError):
+        parser._fetch_json("cash_flow_statement")
 
 
 def test_get_balance_sheet():
